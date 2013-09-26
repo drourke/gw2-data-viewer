@@ -1,0 +1,13 @@
+{
+  "name": "guildwars-data-viewer",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "3.3.6",
+    "jade": "*",
+    "gw2nodelib": "0.0.2"
+  }
+}
