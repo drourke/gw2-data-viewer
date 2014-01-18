@@ -1,0 +1,21 @@
+extends layout
+
+block content
+    script(src='/js/libs/sorttable.js')
+    script(src='/js/libs/classie.js')
+    table(class="sortable item-table")
+        thead
+            tr
+                th Name
+                th Type
+                th Rarity
+                th Level
+                //- th Icon
+        tbody(class="item-row-container")
+            each key, i in item
+                tr(class="item-row" id=key.item_id)
+                    td= key.name
+                    td= key.type
+                    td= key.rarity
+                    td= key.level
+    script(src='/js/main.js')   

@@ -1,0 +1,37 @@
+extends layout
+
+block content
+    div.finditems-container
+        div.finditems-title
+            h2 Search the item API.
+        div.finditems-form
+            p Find Item's
+            form(name="itemform" action="/view_table" method="get")
+                div
+                    select(name="type")
+                        option All Types
+                        option Armor
+                        option Weapon
+                        option Bag
+                        option Consumable
+                        option CraftingMaterial
+                        option Gizmo
+                        option MiniPet
+                    label Craftable?
+                    input(name='craftable' type='checkbox' id='craftable-check')
+                div
+                    select(name="rarity")
+                        option All Rarities
+                        option Basic
+                        option Fine
+                        option Masterwork
+                        option Rare
+                        option Exotic
+                        option Ascended
+                    label Level
+                    input(name="minLevel" type='text' size='1px')
+                    label to
+                    input(name='maxLevel' type='text' size='1px')
+                div
+                    input(type="submit" value="Search")
+                    a(href='/advancedsearch') Advanced Search

@@ -1,13 +1,19 @@
 {
-  "name": "guildwars-data-viewer",
+  "name": "gw2-dataviewer",
   "version": "0.0.1",
   "private": true,
   "scripts": {
     "start": "node app.js"
   },
   "dependencies": {
-    "express": "3.3.6",
+    "express": "*",
     "jade": "*",
-    "gw2nodelib": "0.0.2"
+    "request": "*",
+    "load-grunt-tasks": "~0.2.0"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-sass": "~0.5.0",
+    "grunt-contrib-watch": "~0.5.3"
   }
 }

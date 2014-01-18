@@ -1,0 +1,49 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  font    : 18px 'Lato', sans-serif;
+  background-color: #EEE; 
+  overflow:hidden;
+}
+
+#tree-container {
+  border: 1px solid black;
+}
+.node {
+  cursor: pointer;
+}
+
+.overlay{
+    background-color:#EEE;
+}
+ 
+.node circle {
+  fill: #fff;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+ 
+.node text {
+  font-size:10px; 
+  font-family:sans-serif;
+}
+ 
+.link {
+  fill: none;
+  stroke: #ccc;
+  /* stroke-width: 1.5px; */
+}
+
+.templink {
+  fill: none;
+  stroke: red;
+  stroke-width: 3px;
+}
+
+.ghostCircle.show{
+    display:block;
+}
+
+.ghostCircle, .activeDrag .ghostCircle{
+     display: none;
+}
