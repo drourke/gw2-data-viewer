@@ -1,0 +1,30 @@
+extends layouts/default
+
+block content
+  ol.breadcrumb
+    li.active Home
+  div.row
+    div(class='col-sm-2')
+      include layouts/components/sidebar
+    div(class='col-sm-8')
+      h2(class='sub-header') Recipe API
+      div(class='list-group')
+        a(href='/recipes/all' class='list-group-item')
+          h4(class='list-group-item-heading') recipes/all
+          p(class='list-group-item-text') List of all recipe id's
+
+        a(href='#' class='list-group-item')
+          h4(class='list-group-item-heading') recipes/all/items
+          p(class='list-group-item-text') List of all items produced from crafting
+
+        a(href='#' class='list-group-item')
+          h4(class='list-group-item-heading') recipes/all/ingredients
+          p(class='list-group-item-text') List of all items used as ingredients
+
+        a(href='/recipes/discipline' class='list-group-item')
+          h4(class='list-group-item-heading') recipes/discipline
+          p(class='list-group-item-text') List of crafting disciplines and types associated with each one.
+        
+
+
+
