@@ -2,7 +2,9 @@
 .nodemonignore
 .sass-cache/
 node_modules/
-public/lib
+public/libs
+public/img
+public/js/libs
 test/coverage/
 
 #################

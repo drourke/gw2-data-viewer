@@ -40,10 +40,14 @@ var RecipeSchema = new Schema({
   }]
 });
 
-
 /**
- * Statics
+ * Middleware
  */
+RecipeSchema.pre('save', function(next) {
+  this._id = this.recipe_id;
+
+  next();
+});
 
 /**
  * Returns the recipe document associated with _id and

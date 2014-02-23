@@ -237,6 +237,11 @@ ItemSchema.path('name').validate(function(name) {
 mongoose.model('Item', ItemSchema);
 
 
+
+/**
+ * Requests every item in the GW2 API and updates
+ * item collection with values returned
+ */
 exports.updateAll = function() {
   var Item     = mongoose.model('Item');
   var request = require('request');
