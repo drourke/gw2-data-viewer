@@ -31,12 +31,9 @@ module.exports = function(app, db) {
     if (process.env.NODE_ENV === 'development') {
         app.use(express.logger('dev'));
     }
-
-    // assign the template engine to .html files
-    app.engine('html', consolidate[config.templateEngine]);
-
+    
     // set .html as the default extension
-    app.set('view engine', 'html');
+    app.set('view engine', 'jade');
 
     // Set views path, template engine and default layout
     app.set('views', config.root + '/public');

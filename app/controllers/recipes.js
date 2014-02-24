@@ -14,11 +14,23 @@ exports.recipe = function(req, res, next, id) {
 
   Recipe.load(id, function (err, recipe) {
 
-    if (err)
-      return next(err);
+    if (err) return next(err);
+    if(!recipe) return next(new Error ('Failed to load recipe ' + id));
 
-    if(!recipe)
-      return next(new Error ('Failed to load recipe ' + id));
+    req.recipe = recipe;
+    next();
+  });
+};
+
+/**
+ * Find a recipe by item_id
+ */
+exports.itemRecipe = function(req, res, next, id) {
+
+  Recipe.findByItem(id, function (err, recipe) {
+
+    if (err)return next(err);
+    if(!recipe)return next(new Error ('Failed to load recipe ' + id));
 
     req.recipe = recipe;
 
@@ -28,34 +40,14 @@ exports.recipe = function(req, res, next, id) {
 
 
 /**
- * Find a recipe by item_id
+ * Aggregation methods
  */
-exports.itemRecipe = function(req, res, next, id) {
-
-  Recipe.findByItem(id, function (err, recipe) {
-
-    if (err)
-      return next(err);
-
-    if(!recipe)
-      return next(new Error ('Failed to load recipe ' + id));
-
-    req.recipe = recipe;
-
-    next();
-  });
-};
-
-
 exports.disciplineInfo = function(req, res, next, discipline) {
 
   Recipe.groupByDiscipline(discipline, function (err, categories) {
 
-    if (err)
-      return next(err);
-
-    if(!categories)
-      return next(new Error ('Failed to load discipline ' + discipline));
+    if (err) return next(err);
+    if(!categories) return next(new Error ('Failed to load discipline ' + discipline));
 
     req.categories = categories;
     req.discipline = discipline;
@@ -82,7 +74,6 @@ exports.disciplineInfo = function(req, res, next, discipline) {
  *     'type' = categories, 
  *     'disciplines' = discipline
  */
- 
 exports.discipline = function(req, res) {
 
   Recipe.aggregate({
@@ -121,23 +112,6 @@ exports.discipline = function(req, res) {
   );
 };
 
-
-/**
- * Show a recipe
- */
-exports.show = function(req, res) {
-  res.json('layout', req.recipe);
-};
-
-exports.showDiscipline = function(req, res) {
-  res.render('categories', {
-    'discipline': req.discipline,
-    'categories': req.categories
-  });
-};
-
-
-
 /** 
  * Exports an array of all recipes 
  */
@@ -161,7 +135,6 @@ exports.all = function(req, res) {
   });
 };
 
-
 /**
  * Exports an array of all craftable items
  */
@@ -169,25 +142,49 @@ exports.allItems = function(req, res) {
 
   Recipe.distinct('output_item_id', {}, function (err, items) {
     if (err)
-      console.log(err);
+      res.render('error', {
+        status: 500
+      });
     else
       res.json('layout', {craftable_items: items});
   });
 };
 
 /**
- * Exports an array of all items 
- * which are used as ingredients in crafting
+ * Exports an array of all items which 
+ * are used as ingredients in crafting
  */
 exports.allIngredients = function(req, res) {
 
   Recipe.distinct('ingredients.item_id', {}, function (err, items) {
     if (err)
-      console.log(err);
+      res.render('error', {
+        status: 500
+      });
     else
       res.json('layout', {crafting_items: items});
   });
 };
+
+
+/**
+ * Show a recipe
+ */
+exports.show = function(req, res) {
+  res.json('layout', req.recipe);
+};
+
+exports.showDiscipline = function(req, res) {
+  res.render('categories', {
+    'discipline': req.discipline,
+    'categories': req.categories
+  });
+};
+
+
+
+
+
 
 
 

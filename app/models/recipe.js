@@ -64,7 +64,7 @@ RecipeSchema.statics.load = function(id, cb) {
 
 RecipeSchema.statics.findByItem = function(id, cb) {
   this
-    .find({output_item_id: id})
+    .findOne({output_item_id: id})
     .select('recipe_id output_item_id')
     .exec(cb);
 };

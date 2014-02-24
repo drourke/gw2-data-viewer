@@ -5,6 +5,10 @@ node_modules/
 public/libs
 public/img
 public/js/libs
+public/styles/sass/bootstrap
+public/styles/javascripts
+public/styles/fonts
+public/styles/.sass-cache
 test/coverage/
 
 #################

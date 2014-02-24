@@ -216,15 +216,12 @@ ItemSchema.statics.aggregateByPropValues = function(params, cb) {
     .exec(cb);
 };
 
-
-
 /**
  * Virtuals
  */
 ItemSchema.virtual.itemTypes = function() {
   return this.distinct('type');
 };
-
 
 /**
  * Validations
@@ -238,12 +235,18 @@ mongoose.model('Item', ItemSchema);
 
 
 
+
+
+
+
+
+
 /**
  * Requests every item in the GW2 API and updates
  * item collection with values returned
  */
 exports.updateAll = function() {
-  var Item     = mongoose.model('Item');
+  var Item    = mongoose.model('Item');
   var request = require('request');
   console.log('updating all items');
 

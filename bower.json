@@ -1,0 +1,8 @@
+{
+    "name": "gw2-data-viewer",
+    "version": "0.0.2",
+    "dependencies": {
+        "d3": "3.4.1",
+        "bootstrap-sass": "3.1.1"
+    }
+}

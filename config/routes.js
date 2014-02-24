@@ -15,16 +15,6 @@ module.exports = function(app) {
   // Home route
   app.get('/', index.render);
 
-  
-  // app.get('/itempage', function(req, res) {
-    
-  //   res.render('index', {
-
-  //   });
-  // });
-
-
-
   /** Recipe Routes
    * 
    * Lists are returned as an array of id's
