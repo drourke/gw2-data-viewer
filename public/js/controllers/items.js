@@ -1,24 +1,10 @@
 'use strict';
 
-angular.module('gw2-data-viewer.items').controller('ItemsController', [
-  '$scope',
-  '$routeParams',
-  'Global',
-  'Items',
-  function ($scope, $routeParams, Global, Items) {
-    $scope.global = Global;
+angular.module('gw2-data-viewer.items')
+  .controller('ItemsController', ['$scope', '$http',
+    function($scope, $http) {
+      $http.get('')
 
-    $scope.find = function() {
-      Items.query(function(items) {
-        $scope.items = items;
-      });
-    };
-
-    $scope.findOne = function() {
-      Items.get({
-        itemId: $routeParams.itemId
-      }, function(article) {
-        $scope.item = item;
-      });
-    };
-}]);
+    }
+  ]
+);
