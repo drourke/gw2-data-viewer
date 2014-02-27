@@ -4,246 +4,253 @@
  * specific properties needed, and store the result in itemApi.data
  */
 var itemApi = {
-    config: {
-        base_url  : 'https://api.guildwars2.com/v1',
-        build     : '/build.json',
-        cacheFile : '../datasorter/cache/gw2_items.json',
-        items: {
-            store      : '../datasorter/cache/gw2_items.json',
-            id_url     : 'https://api.guildwars2.com/v1/items.json',
-            detail_url : 'https://api.guildwars2.com/v1/item_details.json' 
-        },
-        recipes: {
-            id_url     : 'https://api.guildwars2.com/v1/recipes.json',
-            detail_url : 'https://api.guildwars2.com/v1/recipe_details.json'
-        }
+  config: {
+    base_url  : 'https://api.guildwars2.com/v1',
+    build     : '/build.json',
+    cacheFile : '../gw2-data-viewer/cache/gw2_items.json',
+    items: {
+      store      : '../gw2-data-viewer/cache/gw2_items.json',
+      id_url     : 'https://api.guildwars2.com/v1/items.json',
+      detail_url : 'https://api.guildwars2.com/v1/item_details.json' 
     },
-    dataMap: {},
-    recipeIds: {},
-    load: function() {
-        console.log('loading itemApi');
-
-        var cache = this.config.cacheFile;
-        var me    = this;
-
-        this.file.load(cache, function (items) {
-            for (var key in items)
-                me.add(key, items[key]);
-
-            console.log('done adding file to hashmap.');
-        });
-    },
-    /* 
-     * Adds an item to the hashmap 
-     * if the item already exists, it 
-     * adds the properties in 'item'
-     * to the location.
-     */
-    add: function(key, item) {
-        this.dataMap[key] = item;
-        // var location = this.dataMap[key];
-        // if (location === undefined)
-        //     location = item;
-        // else
-        //     for (var prop in item)
-        //         location[prop] = item[prop];
-    },
-    update: function(key, item) {
-        var compareItems,
-            compareRecipes,
-            doneUpdating,
-            addRecipe,
-            addItem;
-
-        var itemIds_url   = this.config.items.id_url,
-            recipeIds_url = this.config.recipes.id_url,
-
-            itemDetails_url   = this.config.items.detail_url,
-            recipeDetails_url = this.config.recipes.detail_url;
-    },
-    file: {
-        /* Append the item/recipe JSON to the end of the file, */
-        add: function(data, file) {
-            var fs       = require('fs');
-            var jsonData = JSON.stringify(data, null, 4);
-            
-            fs.writeFile(file, jsonData, function (err) {   
-                if (err) 
-                    console.log(err);
-
-            });
-        },
-        load: function(file, callback) {
-            console.log('loading file...');
-
-            var fs = require('fs');
-            fs.readFile(file, function (err, data) {
-                if (err) {
-                    console.log('error reading file.');
-                    console.log(err);
-                }
-                else {
-                    console.log('done loading file.');
-                    callback(JSON.parse(data));
-                }
-            });
-        }
-    },
-    api: {
-        request: function(url, params, callback) {
-            var request = require('request');
-     
-            if (params !== null)
-                url += params;
-
-            request(url, function (error, response, body) {
-                if (error || response.statusCode !== 200) {
-                    console.log('error making request');
-                    console.log(error);
-                    callback(null);
-                }
-                else {
-                    callback(JSON.parse(body));
-                }
-            });
-        },
-        getIcon: function(item) {
-            var signature = item.icon_file_signature;
-            var file_id   = item.icon_file_id;
-            var format    = '.png';
-
-            var render_url = 'https://render.guildwars2.com/file/' 
-                           + signature 
-                           + '/' 
-                           + file_id 
-                           + format;
-
-            return render_url;
-        }
-    },
-    /*
-     * cache.load
-     * cache.add
-     * cache.update
-     */
-    cache: {
-        update: function() {
-            var compareItems,
-                compareRecipes,
-                doneUpdating,
-                addRecipe,
-                addItem;
-
-            var item_url   = itemApi.config.items.id_url;
-            var recipe_url = itemApi.config.recipes.id_url;
-
-            var itemDetail_url   = itemApi.config.items.detail_url;
-            var recipeDetail_url = itemApi.config.recipes.detail_url;
-
-            compareItems = function(data) {
-                var itemKeys     = data.items;
-                var cacheKeys    = Object.keys(itemApi.dataMap);
-                var missingItems = itemApi.cache.missingItems = itemKeys.length - cacheKeys.length;
-
-                console.log('missing items:' +missingItems);
-
-                if (itemApi.cache.missingItems > 0) {
-                    for (var key in itemKeys) {
-                        var id = itemKeys[key];
-
-                        if (itemApi.dataMap[id] === undefined) {
-                            console.log('item not found in cache, sending request.');
-                            console.log('item_id: ' +id);
-
-                            var params = '?item_id=' + id;
-                            itemApi.api.request(itemDetail_url, params, addItem);
-                        }
-                    }
-                } 
-                else {
-                    itemApi.cache.missingItems = 0;
-                }
-            };
-
-            compareRecipes = function(data) {
-                var recipeKeys     = data.recipes,
-                    cacheRecipes   = Object.keys(itemApi.recipeIds),
-                    missingRecipes = itemApi.cache.missingRecipes = recipeKeys.length - cacheRecipes.length;
-
-                console.log('missing recipes:' +missingRecipes);
-
-                if (missingRecipes > 0) {
-                    for (var key in recipeKeys) {
-                        var id = recipeKeys[key];
-
-                        if (itemApi.recipeIds[id] === undefined) {
-                            console.log('recipe not found in cache, sending request.');
-                            console.log('recipe_id: ' +id);
-
-                            var params = '?recipe_id=' +id;
-                            itemApi.api.request(recipeDetail_url, params, addRecipe);
-                        }
-                    }
-                } else {
-                    itemApi.cache.missingRecipes = 0;
-                }
-            };
-
-            doneUpdating = function() {
-                if (itemApi.cache.missingRecipes === 0 &&
-                    itemApi.cache.missingItems   === 0 )
-                    return true;
-                return false;
-            };
-
-            addRecipe = function(recipe) {
-                itemApi.cache.missingRecipes--;
-                console.log('missing recipes left: ' +itemApi.cache.missingRecipes);
-
-                if (recipe !== null)
-                    itemApi.cache.add(recipe.output_item_id, { recipe: recipe });
-
-
-                if (doneUpdating()) {
-                    console.log('finished syncing!');
-                    itemApi.file.add(itemApi.dataMap, '../datasorter/cache/gw2_items.json');
-                }
-                
-            };
-
-            addItem = function(item) {
-                itemApi.cache.missingItems--;
-                console.log('missing items left: ' +itemApi.cache.missingItems);
-                
-                if (item !== null)
-                    itemApi.cache.add(item.item_id, item);
-                
-                if (doneUpdating()) {
-                    console.log('finished syncing!');
-                    itemApi.file.add(itemApi.dataMap, '../datasorter/cache/gw2_items.json');
-                }
-                
-            };
-
-            itemApi.api.request(item_url, null, compareItems);
-            itemApi.api.request(recipe_url, null, compareRecipes);
-        }
+    recipes: {
+      id_url     : 'https://api.guildwars2.com/v1/recipes.json',
+      detail_url : 'https://api.guildwars2.com/v1/recipe_details.json'
     }
+  },
+  dataMap: {},
+  recipeIds: {},
+  load: function() {
+    console.log('loading itemApi');
+
+    var cache = this.config.cacheFile;
+    var me    = this;
+
+    this.file.load(cache, function (items) {
+      for (var key in items)
+          me.add(key, items[key]);
+
+      console.log('done adding file to hashmap.');
+    });
+  },
+  add: function(key, item) {
+    this.dataMap[key] = item;
+  },
+  file: {
+    /* Append the item/recipe JSON to the end of the file, */
+    add: function(data, file) {
+      var fs       = require('fs');
+      var jsonData = JSON.stringify(data, null, 4);
+        
+      fs.writeFile(file, jsonData, function (err) {   
+        if (err) 
+          console.log(err);
+      });
+    },
+      load: function(file, callback) {
+        console.log('loading file...');
+        var fs = require('fs');
+
+      fs.readFile(file, function (err, data) {
+        if (err) {
+          console.log('error reading file.');
+          console.log(err);
+        }
+        else {
+          console.log('done loading file.');
+          callback(JSON.parse(data));
+        }
+      });
+    }
+  },
+  api: {
+    request: function(url, params, callback) {
+      var request = require('request');
+
+      if (params !== null)
+        url += params;
+
+      request(url, function (error, response, body) {
+        if (error || response.statusCode !== 200) {
+          console.log('error making request');
+          console.log(error);
+          callback(null);
+        }
+        else {
+          callback(JSON.parse(body));
+        }
+      });
+    },
+    getIcon: function(item) {
+      var signature = item.icon_file_signature;
+      var file_id   = item.icon_file_id;
+      var format    = '.png';
+
+      var render_url = 'https://render.guildwars2.com/file/' 
+                     + signature 
+                     + '/' 
+                     + file_id 
+                     + format;
+
+      return render_url;
+    }
+  },
+  cache: {
+    update: function() {
+      var compareItems,
+          compareRecipes,
+          doneUpdating,
+          addRecipe,
+          addItem;
+
+      var item_url   = itemApi.config.items.id_url;
+      var recipe_url = itemApi.config.recipes.id_url;
+
+      var itemDetail_url   = itemApi.config.items.detail_url;
+      var recipeDetail_url = itemApi.config.recipes.detail_url;
+
+      compareItems = function(data) {
+        var itemKeys     = data.items;
+        var cacheKeys    = Object.keys(itemApi.dataMap);
+        var missingItems = itemApi.cache.missingItems = itemKeys.length - cacheKeys.length;
+
+        console.log('missing items:' +missingItems);
+
+        if (itemApi.cache.missingItems > 0) {
+          for (var key in itemKeys) {
+            var id = itemKeys[key];
+
+            if (itemApi.dataMap[id] === undefined) {
+              console.log('item not found in cache, sending request.');
+              console.log('item_id: ' +id);
+
+              var params = '?item_id=' + id;
+              itemApi.api.request(itemDetail_url, params, addItem);
+            }
+          }
+        } 
+        else {
+          itemApi.cache.missingItems = 0;
+        }
+      };
+
+      compareRecipes = function(data) {
+        var recipeKeys     = data.recipes;
+        var cacheRecipes   = Object.keys(itemApi.recipeIds);
+        var missingRecipes = itemApi.cache.missingRecipes = recipeKeys.length - cacheRecipes.length;
+
+        console.log('missing recipes:' +missingRecipes);
+        if (missingRecipes > 0) {
+          for (var key in recipeKeys) {
+            var id = recipeKeys[key];
+
+            if (itemApi.recipeIds[id] === undefined) {
+              console.log('recipe not found in cache, sending request.');
+              console.log('recipe_id: ' +id);
+
+              var params = '?recipe_id=' +id;
+              itemApi.api.request(recipeDetail_url, params, addRecipe);
+            }
+          }
+        } 
+        else {
+          itemApi.cache.missingRecipes = 0;
+        }
+      };
+
+      doneUpdating = function() {
+        if (itemApi.cache.missingRecipes === 0 && itemApi.cache.missingItems === 0 )
+          return true;
+        return false;
+      };
+
+      addRecipe = function(recipe) {
+        itemApi.cache.missingRecipes--;
+        console.log('missing recipes left: ' +itemApi.cache.missingRecipes);
+
+        if (recipe !== null)
+          itemApi.add(recipe.output_item_id, { recipe: recipe });
+
+        if (doneUpdating()) {
+          console.log('finished syncing!');
+          itemApi.file.add(itemApi.dataMap, '../datasorter/cache/gw2_items.json');
+        }        
+      };
+
+      addItem = function(item) {
+        itemApi.cache.missingItems--;
+        console.log('missing items left: ' +itemApi.cache.missingItems);
+        
+        if (item !== null)
+          itemApi.add(item.item_id, item);
+        
+        if (doneUpdating()) {
+          console.log('finished syncing!');
+          itemApi.file.add(itemApi.dataMap, '../datasorter/cache/gw2_items.json');
+        }          
+      };
+
+      itemApi.api.request(item_url, null, compareItems);
+      itemApi.api.request(recipe_url, null, compareRecipes);
+    }
+  }
 };
 
 (function init() {
-    console.log('init');
-    itemApi.load();
+  console.log('init');
+  itemApi.load();
 }());
 
+/* Basic search form for items */
+exports.find_items = function(req, res) {
+  res.render('finditems');
+};
+
+/* Exports item details in JSON about a specific item, req should contain an item_id */
+exports.item_details = function(req, res) {
+  var item_details = getItemDetails(req);
+
+  res.json('layout', item_details);   
+};
+
+/* exports JSON map of the recipe for a given item id */
+exports.recipe_map = function(req, res) {
+  console.log('getting recipe map');
+
+  var item_details = getItemDetails(req);
+  var recipe_map   = [];
+
+  mapRecipes(item_details, recipe_map);
+
+  res.json('layout', recipe_map[0]);
+};
+
+/* Generates a map of all properties currently in the dataMap. */
+exports.property_map = function(req, res) {
+  var root = itemApi.dataMap;
+  var prop_map = {};
+
+  /* Iterate through each item */ 
+  for (var key in root) {
+    var item = root[key];
+
+    for (var item_key in item) {
+      mapProperties(item, item_key, prop_map);
+    }
+  }
+
+  res.json('layout', prop_map);
+};
+
+/* helper function to get item id from request */
 function getItemDetails(req) {
-    var url = require('url');
-    
-    var filter_item = url.parse(req.url, true).query,
-        req_id      = filter_item.item_id,
-        req_details  = itemApi.dataMap[req_id]; 
-    
-    return req_details;  
+  var url = require('url');
+ 
+  var filter_item  = url.parse(req.url, true).query,
+      req_id       = filter_item.item_id,
+      req_details  = itemApi.dataMap[req_id]; 
+  
+  return req_details;  
 }
 
 /* map recipes of given item */
@@ -344,114 +351,6 @@ function mapProperties(item, property, map_node) {
     }
     return;
 }
-
-/* exports JSON map of the recipe for a given item id */
-exports.recipe_map = function(req, res) {
-    console.log('getting recipe map');
-
-    var item_details = getItemDetails(req);
-    var recipe_map   = [];
-
-    mapRecipes(item_details, recipe_map);
-
-    res.json('layout', recipe_map[0]);
-};
-
-/* Generates a map of all properties currently in the dataMap. */
-exports.property_map = function(req, res) {
-    var root = itemApi.dataMap;
-    var prop_map = {};
-
-    /* Iterate through each item */ 
-    for (var key in root) {
-        var item = root[key];
-
-        for (var item_key in item) {
-            mapProperties(item, item_key, prop_map);
-        }
-    }
-
-    res.json('layout', prop_map);
-};
-
-/* Exports item details in JSON about a specific item, req should contain an item_id */
-exports.item_details = function(req, res) {
-    // var item_details = getItemDetails(req);
-
-    // var icon     = itemApi.api.getIcon(item_details);
-    // var icon_alt = item_details.name + '.png';
-
-    // var item = {
-    //     'name'     : item_details.name,
-    //     'type'     : item_details.type,
-    //     'rarity'   : item_details.rarity,
-
-    //     'icon'     : icon,
-    //     'icon_alt' : icon_alt
-    // };
-
-    res.json('layout', itemApi);   
-};
-
-
-exports.craftHome = function(req, res) {
-    var craftDisciplines = [
-        'Armorsmith',
-        'Artificer',
-        'Chef',
-        'Huntsman',
-        'Jeweler',
-        'Leatherworker',
-        'Tailor',
-        'Weaponsmith'
-    ];
-
-    res.send('craftHome', {craftList: craftDisciplines});
-
-};
-
-
-exports.craftInfo = function(req, res) {
-    var discipline = req.params.discipline;
-    var items      = itemApi.dataMap;
-    var craftMap   = {};
-
-
-    console.log('craftInfo');
-
-    for (var key in items) {
-        var item = items[key];
-        
-        if (item.recipe !== undefined) {
-
-            var disciplines = item.recipe.disciplines;
-
-            if (disciplines.indexOf(discipline) !== -1) {
-                craftMap[key] = {
-                    name   : item.name,
-                    rarity : item.rarity,
-                    type   : item.type,
-                    level  : item.level
-                };
-            }
-        }
-    }
-
-    res.json('layout', craftMap);
-};
-
-
-
-
-
-
-
-
-
-/* Basic search form for items */
-exports.find_items = function(req, res) {
-    res.render('finditems');
-};
 
 /* Table view of found items */
 exports.item_table = function(req, res) {
@@ -661,3 +560,51 @@ function getItemModel(item_details) {
 
     return item;
 }
+
+
+exports.craftHome = function(req, res) {
+    var craftDisciplines = [
+        'Armorsmith',
+        'Artificer',
+        'Chef',
+        'Huntsman',
+        'Jeweler',
+        'Leatherworker',
+        'Tailor',
+        'Weaponsmith'
+    ];
+
+    res.send('craftHome', {craftList: craftDisciplines});
+
+};
+
+
+exports.craftInfo = function(req, res) {
+    var discipline = req.params.discipline;
+    var items      = itemApi.dataMap;
+    var craftMap   = {};
+
+
+    console.log('craftInfo');
+
+    for (var key in items) {
+        var item = items[key];
+        
+        if (item.recipe !== undefined) {
+
+            var disciplines = item.recipe.disciplines;
+
+            if (disciplines.indexOf(discipline) !== -1) {
+                craftMap[key] = {
+                    name   : item.name,
+                    rarity : item.rarity,
+                    type   : item.type,
+                    level  : item.level
+                };
+            }
+        }
+    }
+
+    res.json('layout', craftMap);
+};
+
