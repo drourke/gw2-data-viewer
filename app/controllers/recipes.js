@@ -116,12 +116,9 @@ exports.discipline = function(req, res) {
  * Exports an array of all recipes 
  */
 exports.all = function(req, res) {
-
   console.log('find all recipe ids');
 
-
   Recipe.find({}, { 'recipe_id' : 1 }, function (err, recipes) {
-  
     if (err) {
       console.log(err);
     }
@@ -129,8 +126,8 @@ exports.all = function(req, res) {
       var recipeIds = recipes.map(function (recipe) {
         return recipe.recipe_id;
       });
-      
-      res.json('layout', {recipe_ids: recipeIds});
+
+      res.json('layout', {recipes: recipeIds});
     }
   });
 };
@@ -182,42 +179,51 @@ exports.showDiscipline = function(req, res) {
 };
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 exports.updateAll = function() {
-  console.log('updating all recipes');
-
+  var mongoRecipes;
+  var checkAPI;
+  var getDetails;
   var detailUrl = 'https://api.guildwars2.com/v1/recipe_details.json?recipe_id=';
+  var recipeUrl = 'https://api.guildwars2.com/v1/recipes.json';
 
-  var getDetails = function(element) {
-
-    var recipeUrl = detailUrl + element;
-    console.log('getDetails');
+  Recipe.find({}, { 'recipe_id' : 1 }, function (err, recipes) {
+    if (err) {
+      console.log(err);
+    }
+    else {
+      mongoRecipes = recipes.map(function (recipe) {
+        return recipe.recipe_id;
+      });
+      checkAPI();
+    }
+  });
+  
+  checkAPI = function() {
 
     request(recipeUrl, function (error, response, body) {
-
-
       if (!error && response.statusCode === 200) {
 
+        var recipeIds  = JSON.parse(body);
+        var recipeList = recipeIds.recipes;
+
+        recipeList.filter(function (recipe_id) {
+          if (mongoRecipes.indexOf(recipe_id) === -1) {
+            getDetails(recipe_id);
+          }
+        });
+      }
+    });
+  };
+  getDetails = function(element) {
+    var recipeUrl = detailUrl + element;
+    console.log('getDetails: ' +element);
+
+    request(recipeUrl, function (error, response, body) {
+      if (!error && response.statusCode === 200) {
         var recipeDetails = JSON.parse(body);
-        var recipe = new Recipe(recipeDetails);
+        var recipe        = new Recipe(recipeDetails);
+        
+        console.log('saving recipe: ' +recipe.recipe_id);
         recipe.save();
       }
       else {
@@ -226,19 +232,4 @@ exports.updateAll = function() {
       }
     });
   };
-
-  request('https://api.guildwars2.com/v1/recipes.json', function (error, response, body) {
-    if (!error && response.statusCode === 200) {
-
-      var recipeIds = JSON.parse(body);
-      var recipeList  = recipeIds;
-
-      console.log(Array.isArray(recipeList));
-
-      for (var key in recipeList) {
-        recipeList[key].forEach(getDetails);
-      }
-
-    }
-  });
 };

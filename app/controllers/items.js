@@ -44,7 +44,7 @@ exports.all = function(req, res) {
       var itemIds = items.map(function (item) {
         return item.item_id;
       });
-      res.json(items: itemIds);
+      res.json(itemIds);
     }
   });
 };

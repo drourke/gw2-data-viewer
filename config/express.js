@@ -36,8 +36,8 @@ module.exports = function(app, db) {
     app.set('view engine', 'jade');
 
     // Set views path, template engine and default layout
-    app.set('views', config.root + '/public');
-
+    // app.set('views', config.root + '/public');
+    app.set('views', config.root +'/app/views');
     // Enable jsonp
     app.enable("jsonp callback");
 
