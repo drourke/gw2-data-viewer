@@ -9,7 +9,6 @@ var itemApi = {
     build     : '/build.json',
     cacheFile : '../gw2-data-viewer/cache/gw2_items.json',
     items: {
-      store      : '../gw2-data-viewer/cache/gw2_items.json',
       id_url     : 'https://api.guildwars2.com/v1/items.json',
       detail_url : 'https://api.guildwars2.com/v1/item_details.json' 
     },
@@ -28,10 +27,12 @@ var itemApi = {
 
     this.file.load(cache, function (items) {
       for (var key in items)
-          me.add(key, items[key]);
+        me.add(key, items[key]);
 
       console.log('done adding file to hashmap.');
+      // me.cache.update();
     });
+
   },
   add: function(key, item) {
     this.dataMap[key] = item;
@@ -47,9 +48,9 @@ var itemApi = {
           console.log(err);
       });
     },
-      load: function(file, callback) {
-        console.log('loading file...');
-        var fs = require('fs');
+    load: function(file, callback) {
+      console.log('loading file...');
+      var fs = require('fs');
 
       fs.readFile(file, function (err, data) {
         if (err) {
@@ -97,6 +98,8 @@ var itemApi = {
   },
   cache: {
     update: function() {
+      console.log('updating cache');
+
       var compareItems,
           compareRecipes,
           doneUpdating,
@@ -173,7 +176,7 @@ var itemApi = {
 
         if (doneUpdating()) {
           console.log('finished syncing!');
-          itemApi.file.add(itemApi.dataMap, '../datasorter/cache/gw2_items.json');
+          itemApi.file.add(itemApi.dataMap, '../gw2-data-viewer/cache/gw2_items.json');
         }        
       };
 
@@ -186,7 +189,7 @@ var itemApi = {
         
         if (doneUpdating()) {
           console.log('finished syncing!');
-          itemApi.file.add(itemApi.dataMap, '../datasorter/cache/gw2_items.json');
+          itemApi.file.add(itemApi.dataMap, '../gw2-data-viewer/cache/gw2_items.json');
         }          
       };
 

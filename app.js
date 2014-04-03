@@ -2,11 +2,11 @@
  * Module dependencies.
  */
 var express = require('express');
-var routes  = require('./routes');
 var http    = require('http');
 var path    = require('path');
-var request = require('request');
 var url     = require('url');
+var request = require('request');
+var routes  = require('./routes');
 var app     = express();
 
 // all environments

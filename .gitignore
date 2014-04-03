@@ -1,9 +1,10 @@
-node_modules/
-public/js/libs
+node_modules
+public/images
 public/js/old
-public/styes/.sass-cache
-public/styes/sass/.sass-cache
-public/styes/sass/bourbon
+public/js/libs/
+public/styles/.sass-cache
+public/styles/sass/.sass-cache
+public/styles/sass/bourbon
 #################
 ## Eclipse
 #################
