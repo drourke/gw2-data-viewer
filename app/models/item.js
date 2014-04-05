@@ -181,10 +181,6 @@ ItemSchema.pre('save', function(next) {
   next();
 });
 
-ItemSchema.post('init', function(item) {
-  if (process.env.NODE_ENV === 'development')
-    console.log('%s has been initialized from the db', item._id);
-});
 
 /**
  * Find an item by it's _id
@@ -230,56 +226,4 @@ ItemSchema.path('name').validate(function(name) {
   return name.length;
 }, 'Item must have a name');
 
-
 mongoose.model('Item', ItemSchema);
-
-
-
-
-
-
-
-
-
-/**
- * Requests every item in the GW2 API and updates
- * item collection with values returned
- */
-exports.updateAll = function() {
-  var Item    = mongoose.model('Item');
-  var request = require('request');
-  console.log('updating all items');
-
-  var detailUrl = 'https://api.guildwars2.com/v1/item_details.json?item_id=';
-
-  var getDetails = function(itemId) {
-    var itemUrl = detailUrl + itemId;
-
-    request(itemUrl, function (error, response, body) {
-
-
-      if (!error && response.statusCode === 200) {
-        var item = new Item(JSON.parse(body));
-
-        item.update();
-      } else {
-        console.log('error');
-        console.log(error);
-      }
-    });
-  };
-
-  request('https://api.guildwars2.com/v1/items.json', function (error, response, body) {
-    if (!error && response.statusCode === 200) {
-
-      var itemList = JSON.parse(body);
-
-      for (var key in itemList) {
-        if (itemList.hasOwnProperty(key))
-          itemList[key].forEach(getDetails);
-      }
-
-      console.log('finished updating items');
-    }
-  });
-};

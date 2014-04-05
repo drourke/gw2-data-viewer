@@ -178,51 +178,49 @@ exports.showDiscipline = function(req, res) {
   });
 };
 
+/**
+ * Helper functions to manage updating the database with any
+ * changes from the official GW API
+ */
+var gwAPI = {
+  config: {
+    recipes_url : 'https://api.guildwars2.com/v1/recipes.json',
+    detail_url  : 'https://api.guildwars2.com/v1/recipe_details.json?recipe_id='
+  },
+  /**
+   * Used to check if the database needs to be updated.
+   * Return's any recipes in the gw2 API not found in 'recipe_list'
+   */
+  checkRecipes: function(db_recipes) {
+    var me = this;
 
-exports.updateAll = function() {
-  var mongoRecipes;
-  var checkAPI;
-  var getDetails;
-  var detailUrl = 'https://api.guildwars2.com/v1/recipe_details.json?recipe_id=';
-  var recipeUrl = 'https://api.guildwars2.com/v1/recipes.json';
+    request(me.config.recipes_url, function (error, response, body) {
 
-  Recipe.find({}, { 'recipe_id' : 1 }, function (err, recipes) {
-    if (err) {
-      console.log(err);
-    }
-    else {
-      mongoRecipes = recipes.map(function (recipe) {
-        return recipe.recipe_id;
-      });
-      checkAPI();
-    }
-  });
-  
-  checkAPI = function() {
-
-    request(recipeUrl, function (error, response, body) {
       if (!error && response.statusCode === 200) {
-
         var recipeIds  = JSON.parse(body);
         var recipeList = recipeIds.recipes;
 
+        // Filter current list against one from database.
         recipeList.filter(function (recipe_id) {
-          if (mongoRecipes.indexOf(recipe_id) === -1) {
-            getDetails(recipe_id);
+          if (db_recipes.indexOf(recipe_id) === -1) {
+            me.updateRecipe(recipe_id);
           }
         });
       }
     });
-  };
-  getDetails = function(element) {
-    var recipeUrl = detailUrl + element;
-    console.log('getDetails: ' +element);
+  },
+  /**
+   * Updates the database with recipe details from GW API.
+   */
+  updateRecipe: function(recipe_id) {
+    var recipeUrl = this.config.detailUrl + recipe_id;
 
     request(recipeUrl, function (error, response, body) {
       if (!error && response.statusCode === 200) {
         var recipeDetails = JSON.parse(body);
         var recipe        = new Recipe(recipeDetails);
-        
+
+
         console.log('saving recipe: ' +recipe.recipe_id);
         recipe.save();
       }
@@ -231,5 +229,16 @@ exports.updateAll = function() {
         console.log(error);
       }
     });
-  };
+  }
+};
+
+exports.updateAll = function() {
+  Recipe.find({}, { 'recipe_id' : 1 }, function (err, db_recipes) {
+    if (!err) {
+      db_recipes = db_recipes.map(function (recipe) {
+        return recipe.recipe_id;
+      });
+      gwAPI.checkRecipes(db_recipes);
+    }
+  });
 };

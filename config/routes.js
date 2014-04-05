@@ -11,7 +11,10 @@ module.exports = function(app) {
   var index   = require('../app/controllers/index');
   var items   = require('../app/controllers/items');
   var recipes = require('../app/controllers/recipes');
-  // recipes.updateAll();
+  
+  recipes.updateAll();
+  items.updateAll();
+  
   // Home route
   app.get('/', recipes.discipline);
 

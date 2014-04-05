@@ -2,7 +2,6 @@
 .nodemonignore
 .sass-cache/
 node_modules/
-node_modules
 public/libs
 public/img
 public/js/libs
