@@ -3,9 +3,9 @@
 /**
  * Module dependencies.
  */
-var should   = require('should'),
-	mongoose = require('mongoose'),
-	Item     = mongoose.model('Item');
+var should   = require('should');
+var	mongoose = require('mongoose');
+var	Item     = mongoose.model('Item');
 
 //Globals
 var item;

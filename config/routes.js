@@ -13,7 +13,7 @@ module.exports = function(app) {
   var recipes = require('../app/controllers/recipes');
   
   recipes.updateAll();
-  // items.updateAll();
+  items.updateAll();
   
   // Home route
   app.get('/', recipes.discipline);
@@ -34,14 +34,10 @@ module.exports = function(app) {
   app.get('/recipes/all',              recipes.all);
   app.get('/recipes/all/items',        recipes.allItems);
   app.get('/recipes/all/ingredients',  recipes.allIngredients);
-
-  app.get('/recipes/discipline',         recipes.discipline);
-  app.get('/crafting/:discipline',       recipes.showDiscipline);
-  // app.get('/crafting/:discipline/:type', recipes.showDisciplineType);
+  app.get('/recipes/discipline',       recipes.discipline);
+  app.get('/crafting/:discipline',     recipes.showDiscipline);
 
   app.get('/recipes/recipe/:recipeId', recipes.show);
-  // app.get('/recipes/craftingtree/:recipeId', recipes.showCraftingTree);
-  
   app.get('/recipes/item/:itemRecipe', recipes.show);
 
   /**

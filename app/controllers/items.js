@@ -65,7 +65,7 @@ exports.all = function(req, res) {
    */
   checkItems: function(db_items) {
     var me = this;
-    console.log('check item_db for updates');
+    
     request(me.config.items_url, function (error, response, body) {
 
       if (!error && response.statusCode === 200) {

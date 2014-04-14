@@ -59,6 +59,10 @@ module.exports = function(grunt) {
     },
 
     watch: {
+      bower: {
+        files: ['bower.json'],
+        tasks: ['bowerInstall']
+      },
       css: {
         files: ['public/styles/css/styles.css', 'public/styles/sass/styles.scss'],
         tasks: ['sass'],
@@ -91,7 +95,6 @@ module.exports = function(grunt) {
       }
     },
 
-
     concurrent: {
       dev: {
         tasks: ['watch', 'jshint', 'nodemon'],
@@ -121,6 +124,7 @@ module.exports = function(grunt) {
   //Load NPM tasks
   grunt.loadNpmTasks('grunt-contrib-sass');
   grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-bower-install');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-nodemon');
   grunt.loadNpmTasks('grunt-concurrent');
