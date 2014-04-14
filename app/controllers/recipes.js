@@ -201,7 +201,7 @@ var gwAPI = {
         var recipeList = recipeIds.recipes;
 
         // Filter current list against one from database.
-        recipeList.filter(function (recipe_id) {
+        recipeList.forEach(function (recipe_id) {
           if (db_recipes.indexOf(recipe_id) === -1) {
             me.updateRecipe(recipe_id);
           }
@@ -213,13 +213,12 @@ var gwAPI = {
    * Updates the database with recipe details from GW API.
    */
   updateRecipe: function(recipe_id) {
-    var recipeUrl = this.config.detailUrl + recipe_id;
+    var recipeUrl = this.config.detail_url + recipe_id;
 
     request(recipeUrl, function (error, response, body) {
       if (!error && response.statusCode === 200) {
         var recipeDetails = JSON.parse(body);
         var recipe        = new Recipe(recipeDetails);
-
 
         console.log('saving recipe: ' +recipe.recipe_id);
         recipe.save();
@@ -233,7 +232,7 @@ var gwAPI = {
 };
 
 exports.updateAll = function() {
-  Recipe.find({}, { 'recipe_id' : 1 }, function (err, db_recipes) {
+  Recipe.find({}, function (err, db_recipes) {
     if (!err) {
       db_recipes = db_recipes.map(function (recipe) {
         return recipe.recipe_id;

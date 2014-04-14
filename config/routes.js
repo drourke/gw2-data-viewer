@@ -13,7 +13,7 @@ module.exports = function(app) {
   var recipes = require('../app/controllers/recipes');
   
   recipes.updateAll();
-  items.updateAll();
+  // items.updateAll();
   
   // Home route
   app.get('/', recipes.discipline);
@@ -40,7 +40,7 @@ module.exports = function(app) {
   // app.get('/crafting/:discipline/:type', recipes.showDisciplineType);
 
   app.get('/recipes/recipe/:recipeId', recipes.show);
-  app.get('/recipes/craftingtree/:recipeId', recipes.showCraftingTree);
+  // app.get('/recipes/craftingtree/:recipeId', recipes.showCraftingTree);
   
   app.get('/recipes/item/:itemRecipe', recipes.show);
 
@@ -50,7 +50,6 @@ module.exports = function(app) {
   app.param('recipeId',   recipes.recipe);
   app.param('itemRecipe', recipes.itemRecipe);
   app.param('discipline', recipes.disciplineInfo);
-
 
   /** Item Routes
    *

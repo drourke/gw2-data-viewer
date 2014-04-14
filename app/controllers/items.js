@@ -73,9 +73,8 @@ exports.all = function(req, res) {
         var itemList = itemIDs.items;
 
         // Filter current list against one from database.
-        itemList.filter(function (item_id) {
+        itemList.forEach(function (item_id) {
           if (db_items.indexOf(item_id) === -1) {
-            console.log('item_id not found: ' +item_id);
             me.updateItem(item_id);
           }
         });
@@ -90,7 +89,6 @@ exports.all = function(req, res) {
 
     request(itemUrl, function (error, response, body) {
       if (!error && response.statusCode === 200) {
-
         var itemDetails = JSON.parse(body);
         var item        = new Item(itemDetails);
 
@@ -106,7 +104,7 @@ exports.all = function(req, res) {
 };
 
 exports.updateAll = function() {
-  Item.find({}, { 'item_id' : 1 }, function (err, db_items) {
+  Item.find({}, function (err, db_items) {
     if (!err) {
       db_items = db_items.map(function (item) {
         return item.item_id;
