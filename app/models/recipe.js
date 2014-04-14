@@ -11,6 +11,7 @@ var Schema   = mongoose.Schema;
  */
 var RecipeSchema = new Schema({
   item_name: String,
+  name: String,
   recipe_id: {
     type: Number,
     unique   : true,
@@ -56,7 +57,6 @@ RecipeSchema.pre('save', function(next) {
 RecipeSchema.statics.load = function(id, cb) {
   this
     .findOne({recipe_id: id})
-    .populate('output_item_id', 'name')
     .exec(cb);
 };
 

@@ -40,6 +40,8 @@ module.exports = function(app) {
   // app.get('/crafting/:discipline/:type', recipes.showDisciplineType);
 
   app.get('/recipes/recipe/:recipeId', recipes.show);
+  app.get('/recipes/craftingtree/:recipeId', recipes.showCraftingTree);
+  
   app.get('/recipes/item/:itemRecipe', recipes.show);
 
   /**
