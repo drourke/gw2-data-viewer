@@ -184,51 +184,70 @@ exports.showDiscipline = function(req, res) {
  */
 var gwAPI = {
   config: {
-    recipes_url : 'https://api.guildwars2.com/v1/recipes.json',
-    detail_url  : 'https://api.guildwars2.com/v1/recipe_details.json?recipe_id='
+    base_url    : 'https://api.guildwars2.com/v1/',
+    details_uri : 'recipe_details.json?recipe_id=',
+    id_list_uri : 'recipes.json',
   },
+  id_list: [],
+  index: 1,
+
   /**
    * Used to check if the database needs to be updated.
    * Return's any recipes in the gw2 API not found in 'recipe_list'
    */
   checkRecipes: function(db_recipes) {
     var me = this;
+    me.id_list = db_recipes;
+    console.log('ddd');
+    // Each minute send update a request to update a recipe.
+    setInterval(this.intervalUpdate, 60000, this);
 
-    request(me.config.recipes_url, function (error, response, body) {
-
+    var url = me.config.base_url + me.config.id_list_uri;
+    request(url, function (error, response, body) {
       if (!error && response.statusCode === 200) {
-        var recipeIds  = JSON.parse(body);
-        var recipeList = recipeIds.recipes;
+        var recipeList = JSON.parse(body).recipes;
 
         // Filter current list against one from database.
         recipeList.forEach(function (recipe_id) {
-          if (db_recipes.indexOf(recipe_id) === -1) {
-            me.updateRecipe(recipe_id);
-          }
+          if (db_recipes.indexOf(recipe_id) === -1) 
+            me.id_list.push(recipe_id);
         });
+      }
+      else {
+        console.warn(error);
       }
     });
   },
+
   /**
    * Updates the database with recipe details from GW API.
    */
-  updateRecipe: function(recipe_id) {
-    var recipeUrl = this.config.detail_url + recipe_id;
+  updateRecipe: function(id) {
+    var url = this.config.base_url + this.config.details_uri + id;
 
-    request(recipeUrl, function (error, response, body) {
+    request(url, function (error, response, body) {
       if (!error && response.statusCode === 200) {
         var recipeDetails = JSON.parse(body);
-        var recipe        = new Recipe(recipeDetails);
 
-        console.log('saving recipe: ' +recipe.recipe_id);
-        recipe.save();
+        var recipe = new Recipe(recipeDetails);
+            recipe.save();
+
+        console.log('Updated recipe: ' +recipeDetails.recipe_id);
       }
       else {
-        console.log('error');
-        console.log(error);
+        console.warn(error);
       }
     });
-  }
+  },
+  intervalUpdate: function(scope) {
+      scope.index %= scope.id_list.length;
+      var recipe_id = scope.id_list[scope.index];
+
+      console.log('requesting update for recipe: ' +recipe_id);
+
+      scope.updateRecipe(recipe_id);
+      scope.index++;
+    }
 };
 
 exports.updateAll = function() {
