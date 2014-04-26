@@ -23,6 +23,9 @@ var Schema   = mongoose.Schema;
  */
 
 var ItemSchema = new Schema({
+    _id: {
+      type: Number
+    },
     item_id: {
       type: Number,
       unique   : true,

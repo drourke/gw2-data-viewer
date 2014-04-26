@@ -10,8 +10,9 @@ var Schema   = mongoose.Schema;
  * Recipe Schema
  */
 var RecipeSchema = new Schema({
-  item_name: String,
-  name: String,
+  _id: {
+    type: Number
+  },
   recipe_id: {
     type: Number,
     unique   : true,
@@ -57,6 +58,10 @@ RecipeSchema.pre('save', function(next) {
 RecipeSchema.statics.load = function(id, cb) {
   this
     .findOne({recipe_id: id})
+    .populate({
+      path: 'output_item_id',
+      select: 'name -_id'
+    })
     .exec(cb);
 };
 
