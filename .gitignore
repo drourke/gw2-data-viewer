@@ -2,6 +2,7 @@ node_modules
 public/images
 public/js/old
 public/js/libs/
+public/libs/
 public/styles/.sass-cache
 public/styles/sass/.sass-cache
 public/styles/sass/bourbon
@@ -220,3 +221,5 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+*.scssc
+public/libs/bootstrap-sass/.bower.json
