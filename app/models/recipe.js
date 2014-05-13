@@ -59,42 +59,17 @@ RecipeSchema.statics.load = function(id, cb) {
   this
     .findOne({recipe_id: id})
     .populate({
-      path: 'output_item_id',
-      select: 'name -_id'
+      path   : 'output_item_id',
+      select : 'name -_id'
     })
     .exec(cb);
 };
 
-
-
-RecipeSchema.statics.findByItem = function(id, cb) {
-  this
-    .findOne({output_item_id: id})
-    .select('recipe_id output_item_id')
-    .exec(cb);
-};
-
-RecipeSchema.statics.groupByDiscipline = function(discipline, cb) {
+RecipeSchema.statics.getDistinct = function(field, cb) {
   this
     .find({})
-    .where('disciplines').in([discipline])
-    .distinct('type')
+    .distinct(field)
     .exec(cb);
-};
-
-/**
- * Virtuals
- *
- * virtuals are document properties that are convenient to have 
- * around but that do not get persisted to MongoDB.
- *
- * If you need attributes that you can get and set but that are not 
- * themselves persisted to MongoDB, virtual attributes is the Mongoose 
- * feature for you.
- */
-RecipeSchema.virtual.recipeDisciplines = function() {
-  return this
-    .distinct('type');
 };
 
 mongoose.model('Recipe', RecipeSchema);

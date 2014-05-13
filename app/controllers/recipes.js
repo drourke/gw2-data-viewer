@@ -11,6 +11,7 @@ var Recipe   = mongoose.model('Recipe');
  * Find a recipe by recipe_id
  */
 exports.recipe = function(req, res, next, id) {
+  console.log('get recipe_id: ' +id);
 
   Recipe.load(id, function (err, recipe) {
 
@@ -23,38 +24,87 @@ exports.recipe = function(req, res, next, id) {
 };
 
 /**
- * Find a recipe by item_id
+ * Find all the distinct values of a field in the recipe collection.
  */
-exports.itemRecipe = function(req, res, next, id) {
+exports.field = function(req, res, next, field) {
+  console.log('get distinct: ' +field);
 
-  Recipe.findByItem(id, function (err, recipe) {
-
-    if (err)return next(err);
-    if(!recipe)return next(new Error ('Failed to load recipe ' + id));
-
-    req.recipe = recipe;
-
-    next();
-  });
-};
-
-
-/**
- * Aggregation methods
- */
-exports.disciplineInfo = function(req, res, next, discipline) {
-
-  Recipe.groupByDiscipline(discipline, function (err, categories) {
+  Recipe.getDistinct(field, function (err, field_list) {
 
     if (err) return next(err);
-    if(!categories) return next(new Error ('Failed to load discipline ' + discipline));
+    if(!field_list) return next(new Error ('Failed to load field_list ' + field));
 
-    req.categories = categories;
-    req.discipline = discipline;
+    req.recipe        = {};
+    req.recipe[field] = field_list;
 
     next();
   });
 };
+
+/** 
+ * Exports an array of all recipes 
+ */
+
+
+// var alt_test = querystring.parse('filter%5Bwhere%5D%5Bcity%5D=Scottsdale');
+// var conv_back = querystring.stringify(alt_test);
+/**
+ * GET /crafting/{recipe_id}
+ *
+ * GET /crafting?filter[distinct]={field}
+
+   e.g. GET /crafting?filter[distinct]={discipline}
+ * Return all the unique values of the field discipline
+ *
+ * GET /crafting?filter[where][discipline]={discipline}
+ * Return all the recipes with a discipline = {discipline}
+ * 
+ * JSON: { filter: 
+ *           { where: { discipline: 'discipline' }}
+         }
+ *
+
+ * GET /crafting?filter[where][discipline]={discipline}&filter[distinct]={type}
+ * Return all the distinct types of recipe for a discipline
+ *
+ */
+
+
+ // qs.parse('user[name][first]=Tobi&user[email]=tobi@learnboost.com');
+// => { user: { name: { first: 'Tobi' }, email: 'tobi@learnboost.com' } }
+
+// qs.stringify({ user: { name: 'Tobi', email: 'tobi@learnboost.com' }})
+// => user[name]=Tobi&user[email]=tobi%40learnboost.com
+
+
+exports.all = function(req, res) {
+  console.log('find all recipe ids');
+  console.log('filters: ');
+  console.log(req.params);
+  console.log(req.query);
+  
+  Recipe.find({}, { 'recipe_id' : 1 }, function (err, recipes) {
+    if (err) {
+      console.log(err);
+    }
+    else {
+      var recipeIds = recipes.map(function (recipe) {
+        return recipe.recipe_id;
+      });
+
+      res.json('layout', {recipes: recipeIds});
+    }
+  });
+};
+
+/**
+ * Show a recipe
+ */
+exports.show = function(req, res) {
+  res.jsonp(req.recipe);
+};
+
+
 
 /** Aggregation pipeline for item crafting
  *
@@ -112,71 +162,8 @@ exports.discipline = function(req, res) {
   );
 };
 
-/** 
- * Exports an array of all recipes 
- */
-exports.all = function(req, res) {
-  console.log('find all recipe ids');
-
-  Recipe.find({}, { 'recipe_id' : 1 }, function (err, recipes) {
-    if (err) {
-      console.log(err);
-    }
-    else {
-      var recipeIds = recipes.map(function (recipe) {
-        return recipe.recipe_id;
-      });
-
-      res.json('layout', {recipes: recipeIds});
-    }
-  });
-};
-
-/**
- * Exports an array of all craftable items
- */
-exports.allItems = function(req, res) {
-
-  Recipe.distinct('output_item_id', {}, function (err, items) {
-    if (err)
-      res.render('error', {
-        status: 500
-      });
-    else
-      res.json('layout', {craftable_items: items});
-  });
-};
-
-/**
- * Exports an array of all items which 
- * are used as ingredients in crafting
- */
-exports.allIngredients = function(req, res) {
-
-  Recipe.distinct('ingredients.item_id', {}, function (err, items) {
-    if (err)
-      res.render('error', {
-        status: 500
-      });
-    else
-      res.json('layout', {crafting_items: items});
-  });
-};
 
 
-/**
- * Show a recipe
- */
-exports.show = function(req, res) {
-  res.json('layout', req.recipe);
-};
-
-exports.showDiscipline = function(req, res) {
-  res.render('categories', {
-    'discipline': req.discipline,
-    'categories': req.categories
-  });
-};
 
 /**
  * Helper functions to manage updating the database with any
@@ -196,13 +183,15 @@ var gwAPI = {
    * Return's any recipes in the gw2 API not found in 'recipe_list'
    */
   checkRecipes: function(db_recipes) {
-    var me = this;
-    me.id_list = db_recipes;
-    console.log('ddd');
-    // Each minute send update a request to update a recipe.
-    setInterval(this.intervalUpdate, 60000, this);
+    this.id_list = db_recipes;
 
+    // Each minute send update a request to update a recipe.
+    //setInterval(this.intervalUpdate, 60000, this);
+
+    // Build url for req to api, include scope for any updated id's
+    var me  = this;
     var url = me.config.base_url + me.config.id_list_uri;
+    
     request(url, function (error, response, body) {
       if (!error && response.statusCode === 200) {
         var recipeList = JSON.parse(body).recipes;
@@ -240,7 +229,7 @@ var gwAPI = {
     });
   },
   intervalUpdate: function(scope) {
-      scope.index %= scope.id_list.length;
+      scope.index  %= scope.id_list.length;
       var recipe_id = scope.id_list[scope.index];
 
       console.log('requesting update for recipe: ' +recipe_id);
@@ -249,6 +238,7 @@ var gwAPI = {
       scope.index++;
     }
 };
+
 
 exports.updateAll = function() {
   Recipe.find({}, function (err, db_recipes) {

@@ -20,32 +20,40 @@ module.exports = function(app) {
 
   /** Recipe Routes
    * 
-   * Lists are returned as an array of id's
+   *  _____________________________________
+   *  GET api/recipes?{filter}
    *
-   * -Get a list of recipes
-   * -Get a list of craftable items
-   * -Get a list of items used in crafting
-   * -Get a list of recipes, filtered by crafting discipline
+   *  Get a list of all recipes
+   *
+   *  _____________________________________
+   *  GET api/recipes/{id}
+   *  
+   *  Find a recipe instance by {id}
+   *  
+   *  _____________________________________
+   *  GET api/recipes/distinct?{field}
+   *
+   *  Get all the unique values associated with a given field of the recipe model.
    *
    *
-   * -Find recipe details by recipe_id
-   * -Find recipe details by output_item_id
    */
-  app.get('/recipes/all',              recipes.all);
-  app.get('/recipes/all/items',        recipes.allItems);
-  app.get('/recipes/all/ingredients',  recipes.allIngredients);
-  app.get('/recipes/discipline',       recipes.discipline);
-  app.get('/crafting/:discipline',     recipes.showDiscipline);
-
-  app.get('/recipes/recipe/:recipeId', recipes.show);
-  app.get('/recipes/item/:itemRecipe', recipes.show);
+  app.get('/api/recipes',                       recipes.all);
+  app.get('/api/recipes/:recipeId',             recipes.show);
+  app.get('/api/recipes/distinct/:recipeField', recipes.show);
 
   /**
    * Recipe Parameters
+   *
+   * @param{id}     Valid recipe_id
+   * @param{field}  Field to get distinct values of
+   * @param{filter} Filter defining fields, where, orderBy, offset, and limit
    */
-  app.param('recipeId',   recipes.recipe);
-  app.param('itemRecipe', recipes.itemRecipe);
-  app.param('discipline', recipes.disciplineInfo);
+  app.param('recipeId',    recipes.recipe);
+  app.param('recipeField', recipes.field);
+
+
+
+
 
   /** Item Routes
    *

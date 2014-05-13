@@ -6,18 +6,16 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON('package.json'),
 
 
-    sass: {
-      dist: {
-        options: {
-          style: 'expanded'
-        },
-        files: {
-          'public/styles/stylesheets/styles.css': 'public/styles/sass/styles.scss'
-        }
-      }
-    },
-
-
+    // sass: {
+    //   dist: {
+    //     options: {
+    //       style: 'expanded'
+    //     },
+    //     files: {
+    //       'public/styles/css/styles.css': 'public/styles/sass/styles.scss'
+    //     }
+    //   }
+    // },
     jshint: {
       all: {
         src: ['gruntfile.js', 'server.js', 'app/**/*.js'],
@@ -26,8 +24,6 @@ module.exports = function(grunt) {
         }
       }
     },
-
-
     nodemon: {
       dev: {
         cwd: __dirname,
@@ -65,7 +61,7 @@ module.exports = function(grunt) {
       },
       css: {
         files: ['public/styles/css/styles.css', 'public/styles/sass/styles.scss'],
-        tasks: ['sass'],
+        //tasks: ['sass'],
         options: {
           spawn: false,
           livereload: true
@@ -94,17 +90,14 @@ module.exports = function(grunt) {
         }
       }
     },
-
     concurrent: {
       dev: {
-        tasks: ['watch', 'jshint', 'nodemon'],
+        tasks: ['watch', 'jshint', 'nodemon', 'sass'],
         options: {
           logConcurrentOutput: true
         }
       }
     },
-
-
     mochaTest: {
       options: {
         reporter: 'spec',
@@ -112,8 +105,6 @@ module.exports = function(grunt) {
       },
       src: ['test/mocha/**/*.js']
     },
-
-
     env: {
       test: {
         NODE_ENV: 'test'
@@ -135,7 +126,7 @@ module.exports = function(grunt) {
   grunt.option('force', true);
 
   //Default task(s).
-  grunt.registerTask('default', ['sass', 'concurrent']);
+  grunt.registerTask('default', ['concurrent']);
 
   //Test task.
   grunt.registerTask('test', ['env:test', 'mochaTest']);

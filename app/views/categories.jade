@@ -6,9 +6,15 @@ block content
       a(href='/') Home
     li.active= discipline
   div.row
-    div(class='col-sm-3')
+    div(class='col-md-3')
       h3(class='sub-header')= discipline
       ul(class='nav nav-pills nav-stacked')
         li
           each type, i in categories
-            a(href='/crafting/'+discipline+'/'+type class='list-group-item')= type
+            a(href='/crafting/'+discipline+'/d/'+type class='list-group-item')= type
+    if recipe_list !== undefined
+      div(class='col-md-9')
+        ul
+          each recipe, j in recipe_list
+            li
+              a= recipe.name + ',' +recipe.min_rating
