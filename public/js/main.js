@@ -99,7 +99,7 @@ console.log('init main.js');
 
         code_container.className = 'code-container';
         
-        document.getElementById('api-recipe-details').className = 'api-details-expanded';
+        document.getElementById('api-recipe-details').className += ' api-details-expanded';
         document.getElementById('api-recipe-details').appendChild(txt_title);
         document.getElementById('api-recipe-details').appendChild(code_container);
       } 

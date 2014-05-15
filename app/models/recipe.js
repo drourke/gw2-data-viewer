@@ -51,6 +51,11 @@ RecipeSchema.pre('save', function(next) {
   next();
 });
 
+RecipeSchema.post('load', function(next) {
+  console.log('recipe_schema post-load');
+  next();
+});
+
 /**
  * Returns the recipe document associated with _id and
  * populates the name for the item produced
@@ -62,13 +67,6 @@ RecipeSchema.statics.load = function(id, cb) {
       path   : 'output_item_id',
       select : 'name -_id'
     })
-    .exec(cb);
-};
-
-RecipeSchema.statics.getDistinct = function(field, cb) {
-  this
-    .find({})
-    .distinct(field)
     .exec(cb);
 };
 

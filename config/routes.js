@@ -52,9 +52,6 @@ module.exports = function(app) {
   app.param('recipeField', recipes.field);
 
 
-
-
-
   /** Item Routes
    *
    * -Get list of items

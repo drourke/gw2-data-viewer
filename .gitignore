@@ -227,3 +227,7 @@ pip-log.txt
 .mr.developer.cfg
 strongloop.json
 public/js/ExampleReact.js
+public/js/require.js
+config/env/development.js
+config/env/development.js
+config/env/development.js

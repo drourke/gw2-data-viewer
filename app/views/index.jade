@@ -3,13 +3,13 @@ extends layouts/default
 block content
   ol.breadcrumb
     li.active Home
+  //- div.row
+  //-   div(id='react-example')
+  //-   script(type='text/jsx' src='js/ReactTemplate.js')
   div.row
-    div(id='react-example')
-    script(type='text/jsx' src='js/ReactTemplate.js')
-  div.row
-    div(class='col-md-2')
+    div(class='col-sm-2')
       include layouts/components/sidebar
-    div(class='col-md-10')
+    div(class='col-sm-10')
 
       h2(class='sub-header') api/recipes
       div(class='list-group')

@@ -1,7 +1,6 @@
 /** @jsx React.DOM */
 console.log('react-template');
 
-
 var reqHeader = React.createClass({
   render: function() {
     return (
@@ -59,6 +58,34 @@ var reqDetails = React.createClass({
   }
 });
 
+// var sidebarItem = React.createClass({
+//   render: function() {
+//     return (<a class='list-group-item'>{this.props.category}</a>);
+//   }
+// });
+
+// var sidebarContainer = React.createClass({
+//   render: function() {
+//     var rows = [];
+
+    // this.props.sidebarItems.forEach(function(item) {
+    //   rows.push(<sidebarItem category={item} />);
+    // }.bind(this));
+
+    // return (
+    //   <h3 class='sub-header'>{this.props.sidebarTitle}</h3>
+    //   <div>
+    //   </div>
+      // <ul class="nav nav-pills nav-stacked">
+        // <li></li>
+      // </ul>
+//     );
+//   }
+// });
+
+
+
+
 var reqContainer = React.createClass({
   getInitialState: function() {
     return {
@@ -66,7 +93,15 @@ var reqContainer = React.createClass({
       resCode: ''
     };
   },
+  componentDidMount: function() {
+    $.get('api/recipes/distinct/disciplines', function(result) {
 
+      console.log('load initial data via ajax');
+      console.log('result: ');
+      console.log(result);
+      
+    }.bind(this));
+  },
   // Handles submitting request to server and updating UI
   handleSubmit: function(url) {
     console.log('handleSubmit');
@@ -75,16 +110,16 @@ var reqContainer = React.createClass({
     // triggering a render to update the UI.
     $.get(url, function (resCode) {
 
-      var api_container = document.getElementById('api-distinct-details');
-          api_container.className += ' api-details-expanded';
-
       var result_string = JSON.stringify(resCode, null, 2);
       var full_url      = document.baseURI + url;
+      var api_container = document.getElementById('api-distinct-details');
+          api_container.className += ' api-details-expanded';
 
       this.setState({ 
         resCode : result_string,
         resUrl  : full_url
       });
+      
     }.bind(this));
 
     return false;

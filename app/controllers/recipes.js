@@ -29,7 +29,7 @@ exports.recipe = function(req, res, next, id) {
 exports.field = function(req, res, next, field) {
   console.log('get distinct: ' +field);
 
-  Recipe.getDistinct(field, function (err, field_list) {
+  Recipe.distinct(field, function (err, field_list) {
 
     if (err) return next(err);
     if(!field_list) return next(new Error ('Failed to load field_list ' + field));
@@ -185,7 +185,7 @@ var gwAPI = {
   checkRecipes: function(db_recipes) {
     this.id_list = db_recipes;
 
-    // Each minute send update a request to update a recipe.
+    // At a set interval send update a request to update a recipe.
     //setInterval(this.intervalUpdate, 60000, this);
 
     // Build url for req to api, include scope for any updated id's
@@ -194,12 +194,19 @@ var gwAPI = {
     
     request(url, function (error, response, body) {
       if (!error && response.statusCode === 200) {
+        console.log('Loaded recipe id list from official API.');
+        
         var recipeList = JSON.parse(body).recipes;
 
         // Filter current list against one from database.
+        console.log('total recipes (API): ' + recipeList.length);
+        console.log('total recipes (DB):  ' + db_recipes.length);
+
         recipeList.forEach(function (recipe_id) {
-          if (db_recipes.indexOf(recipe_id) === -1) 
+          if (db_recipes.indexOf(recipe_id) === -1) {
             me.id_list.push(recipe_id);
+            me.updateRecipe(recipe_id);
+          }
         });
       }
       else {
@@ -212,41 +219,47 @@ var gwAPI = {
    * Updates the database with recipe details from GW API.
    */
   updateRecipe: function(id) {
-    var url = this.config.base_url + this.config.details_uri + id;
+    console.log('requesting update for recipe: ' +id);
 
+    var url = this.config.base_url + this.config.details_uri + id;
+    
     request(url, function (error, response, body) {
       if (!error && response.statusCode === 200) {
-        var recipeDetails = JSON.parse(body);
 
-        var recipe = new Recipe(recipeDetails);
-            recipe.save();
+        var recipeDetails = JSON.parse(body);
+        var recipe        = new Recipe(recipeDetails);
 
         console.log('Updated recipe: ' +recipeDetails.recipe_id);
+        recipe.save();
       }
       else {
+        console.warn('Error updating recipe.');
         console.warn(error);
       }
     });
   },
   intervalUpdate: function(scope) {
-      scope.index  %= scope.id_list.length;
-      var recipe_id = scope.id_list[scope.index];
+    scope.index  %= scope.id_list.length;
+    var recipe_id = scope.id_list[scope.index];
 
-      console.log('requesting update for recipe: ' +recipe_id);
-
-      scope.updateRecipe(recipe_id);
-      scope.index++;
-    }
+    scope.updateRecipe(recipe_id);
+    scope.index++;
+  }
 };
 
 
 exports.updateAll = function() {
-  Recipe.find({}, function (err, db_recipes) {
+  console.log('updating all recipes');
+
+  Recipe.distinct('_id', function (err, db_recipes) {
     if (!err) {
-      db_recipes = db_recipes.map(function (recipe) {
-        return recipe.recipe_id;
-      });
+      console.log('Loaded recipe IDs from the db.');
+
       gwAPI.checkRecipes(db_recipes);
+    }
+    else {
+      console.warn('Error loading recipe IDs from the db');
+      console.warn(err);
     }
   });
 };
