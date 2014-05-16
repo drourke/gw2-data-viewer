@@ -7,6 +7,7 @@ var mongoose = require('mongoose');
 var request  = require('request');
 var Recipe   = mongoose.model('Recipe');
 
+
 /**
  * Find a recipe by recipe_id
  */
@@ -22,6 +23,7 @@ exports.recipe = function(req, res, next, id) {
     next();
   });
 };
+
 
 /**
  * Find all the distinct values of a field in the recipe collection.
@@ -41,61 +43,46 @@ exports.field = function(req, res, next, field) {
   });
 };
 
-/** 
- * Exports an array of all recipes 
- */
 
-
-// var alt_test = querystring.parse('filter%5Bwhere%5D%5Bcity%5D=Scottsdale');
-// var conv_back = querystring.stringify(alt_test);
 /**
- * GET /crafting/{recipe_id}
- *
- * GET /crafting?filter[distinct]={field}
-
-   e.g. GET /crafting?filter[distinct]={discipline}
- * Return all the unique values of the field discipline
- *
- * GET /crafting?filter[where][discipline]={discipline}
- * Return all the recipes with a discipline = {discipline}
- * 
- * JSON: { filter: 
- *           { where: { discipline: 'discipline' }}
-         }
- *
-
- * GET /crafting?filter[where][discipline]={discipline}&filter[distinct]={type}
- * Return all the distinct types of recipe for a discipline
- *
+ * Find all the recipes matched by filter
  */
-
-
- // qs.parse('user[name][first]=Tobi&user[email]=tobi@learnboost.com');
-// => { user: { name: { first: 'Tobi' }, email: 'tobi@learnboost.com' } }
-
-// qs.stringify({ user: { name: 'Tobi', email: 'tobi@learnboost.com' }})
-// => user[name]=Tobi&user[email]=tobi%40learnboost.com
-
-
 exports.all = function(req, res) {
   console.log('find all recipe ids');
-  console.log('filters: ');
-  console.log(req.params);
-  console.log(req.query);
-  
-  Recipe.find({}, { 'recipe_id' : 1 }, function (err, recipes) {
-    if (err) {
-      console.log(err);
+
+  var filter  = req.query.filter;
+  var where   = {};
+  var options = {};
+
+  for (var key in filter) {
+    if (key === 'where') {
+
+      var param = filter[key];
+
+      for (var p_key in param) {
+        where[p_key] = param[p_key];
+      }
     }
     else {
-      var recipeIds = recipes.map(function (recipe) {
-        return recipe.recipe_id;
-      });
+      options[key] = filter[key];
+    }
+  }
 
-      res.json('layout', {recipes: recipeIds});
+  var query = Recipe.find(where, null, options);
+
+  query.exec(function (err, recipes) {
+    if (err) {
+      console.warn('Error querying recipes');
+      console.warn(err);
+    }
+    else {
+      console.log('Success');
+      console.log('Found: ' +recipes.length+ ' results.');
+      res.jsonp(recipes);
     }
   });
 };
+
 
 /**
  * Show a recipe

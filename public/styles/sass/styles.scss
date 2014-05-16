@@ -30,10 +30,10 @@
   }
  
   .api-request-summary {
-    float: right;
-    font-size: .75em;
-    padding-top: .5em;
-    padding-right: 10px;
+    float         : right;
+    font-size     : .75em;
+    padding-top   : .5em;
+    padding-right : 10px;
   }
 }
 .api-request-details {
@@ -73,9 +73,6 @@
       background-color: rgba(0, 0, 0, 0);
     }
   }
-
-
-  
 }
 
 
@@ -89,5 +86,9 @@
 }
 
 #getDistinctBtn {
+  margin-top: 25px;
+}
+
+#findRecipesBtn {
   margin-top: 25px;
 }

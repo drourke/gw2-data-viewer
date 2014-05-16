@@ -8,6 +8,7 @@ public/styles/sass/bootstrap
 public/styles/javascripts
 public/styles/fonts
 public/styles/.sass-cache
+config/env/
 test/coverage/
 
 #################
@@ -228,6 +229,4 @@ pip-log.txt
 strongloop.json
 public/js/ExampleReact.js
 public/js/require.js
-config/env/development.js
-config/env/development.js
-config/env/development.js
+

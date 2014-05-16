@@ -12,8 +12,8 @@ module.exports = function(app) {
   var items   = require('../app/controllers/items');
   var recipes = require('../app/controllers/recipes');
   
-  recipes.updateAll();
-  items.updateAll();
+  //recipes.updateAll();
+  //items.updateAll();
   
   // Home route
   app.get('/', recipes.discipline);

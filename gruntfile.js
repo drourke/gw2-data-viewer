@@ -4,13 +4,6 @@ module.exports = function(grunt) {
   // Project Configuration
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
-    sass: {
-      dist: {
-        files: {
-          'public/styles/css/styles.css': 'public/styles/sass/styles.scss'
-        }
-      }
-    },
     jshint: {
       all: {
         src: ['gruntfile.js', 'server.js', 'app/**/*.js'],
@@ -57,13 +50,6 @@ module.exports = function(grunt) {
           livereload: true
         }
       },
-      css: {
-        files: 'public/styles/sass/*.scss',
-        tasks: ['sass'],
-        options: {
-          livereload: true
-        }
-      },
       jade: {
         files: ['app/views/**'],
         options: {
@@ -89,8 +75,7 @@ module.exports = function(grunt) {
         tasks: [
           'watch', 
           'jshint', 
-          'nodemon',
-          'sass'
+          'nodemon'
         ],
         options: {
           logConcurrentOutput: true
@@ -114,7 +99,6 @@ module.exports = function(grunt) {
   //Load NPM tasks
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-nodemon');
-  grunt.loadNpmTasks('grunt-contrib-sass');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-bower-install');
   grunt.loadNpmTasks('grunt-concurrent');

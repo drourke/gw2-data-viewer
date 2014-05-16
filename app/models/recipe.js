@@ -51,10 +51,6 @@ RecipeSchema.pre('save', function(next) {
   next();
 });
 
-RecipeSchema.post('load', function(next) {
-  console.log('recipe_schema post-load');
-  next();
-});
 
 /**
  * Returns the recipe document associated with _id and
@@ -65,7 +61,7 @@ RecipeSchema.statics.load = function(id, cb) {
     .findOne({recipe_id: id})
     .populate({
       path   : 'output_item_id',
-      select : 'name -_id'
+      select : 'name'
     })
     .exec(cb);
 };
