@@ -1,0 +1,73 @@
+extends layouts/default
+
+block content
+  div.row
+    div(class='col-md-12')
+
+      h2(class='sub-header') api/recipes
+      div(class='list-group')
+
+        a(class='list-group-item api-request-container')
+          h4(class='list-group-item-heading api-request-header') 
+            span(id='api-request-type') GET
+            span(class='api-request-route') api/recipes
+            span(class='api-request-summary') Find all recipes matched by filter
+          div(class='api-request-details')
+            p Optional parameters include:
+            div.row
+              div.col-md-2
+                div(class='form-group')
+                  label(for='inputWhereFilter') Where
+                  input(type='text' class='form-control' id='inputWhereFilter' placeholder='Field' name='where')
+              div.col-md-2
+                div(class='form-group')
+                  label(for='inputEqualsFilter') Equals
+                  input(type='text' class='form-control' id='inputEqualsFilter' placeholder='Value' name='equals')
+            div.row
+              div.col-md-2
+                div(class='form-group')
+                  label(for='inputLimitFilter') Limit
+                  input(type='text' class='form-control' id='inputLimitFilter' placeholder='Limit' name='limit')
+            div.row
+              div.col-md-2
+                div(class='form-group')
+                  label(for='orderByFilter') Sort By
+                  input(type='text' class='form-control' id='orderByFilter' placeholder='Field' name='orderBy')
+            div.row
+              div.col-md-2
+                div(class='form-group')
+                  label(for='offsetFilter') Offset
+                  input(type='text' class='form-control' id='offsetFilter' placeholder='Offset' name='offest')
+              div.col-md-3
+                button(type='button' class='btn btn-default' id='findRecipesBtn') GET
+
+        a(class='list-group-item api-request-container')
+          h4(class='list-group-item-heading api-request-header') 
+            span(id='api-request-type') GET 
+            span(class='api-request-route') api/recipes/{id}
+            span(class='api-request-summary') Find a recipe instance by id
+          div(class='api-request-details')
+            div.row
+              div.col-md-2
+                div.input-group
+                  label Recipe ID*
+                  input(type='text' class='form-control' id='inputRecipeId' placeholder='ID')
+              div.col-md-3
+                button(type='button' class='btn btn-default' id='recipeIdBtn') GET
+            div(id='api-recipe-details' class='api-details-closed')
+
+        a(class='list-group-item api-request-container')
+          h4(class='list-group-item-heading api-request-header') 
+            span(id='api-request-type') GET 
+            span(class='api-request-route') api/crafting/distinct/{fieldname}
+            span(class='api-request-summary') Find all unique values associated with a field of the recipe model
+          div(class='api-request-details')
+            div.row
+              div.col-md-2
+                div.input-group
+                  label Field Name*
+                  input(type='text' class='form-control' id='inputFieldName' placeholder='Name')
+              div.col-md-3
+                button(type='button' class='btn btn-default' id='getDistinctBtn') GET
+            div(id='api-distinct-details' class='api-details-closed')
+

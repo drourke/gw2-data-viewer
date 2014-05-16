@@ -1,0 +1,94 @@
+// customize bootstrap variables here:
+@import "../../libs/bootstrap-sass/lib/bootstrap";
+@import "variables";
+/*@import "compass/utilities/general/clearfix";*/
+
+.api-request-container {
+  padding: 0;
+  /*border-bottom: 2px solid black;*/
+}
+
+.api-request-header {
+  @include clearfix();
+  margin: 0;
+  border-bottom: 1px solid $gray-lighter;
+  #api-request-type {
+    margin      : 0 10px 0 0;
+    float       : left;
+    color       : #fff;
+    background  : rgb(97, 191, 180);
+    border      : 1px solid rgb(97, 191, 180);
+    padding     : 6px;
+    font-size   : .85em;
+    font-weight : bold;
+  }
+
+  .api-request-route {
+    float: left;
+    padding-top : .5em;
+    font-size   : .75em;
+  }
+ 
+  .api-request-summary {
+    float         : right;
+    font-size     : .75em;
+    padding-top   : .5em;
+    padding-right : 10px;
+  }
+}
+.api-request-details {
+  padding: 10px;
+  margin-top: 10px;
+}
+
+
+.api-details-closed {
+  @include transition(max-height 1.4s ease-in);
+  
+  padding    : 0;
+  max-height : 0;
+  overflow   : hidden;
+
+  border-top : 1px solid $gray-lighter;
+  margin-top : 15px;
+  padding    : 10px;
+
+  overflow   : hidden;
+  p {
+    background-color : $gray-lighter;
+    code {
+      white-space: pre;
+      color: #000;
+      background-color: rgba(0, 0, 0, 0);
+    }
+  }
+  .code-container {
+    overflow         : auto;
+    background-color : $gray-lighter;
+    padding          : 15px;
+    max-height       : 500px;
+    code {
+      white-space: pre;
+      color: #000;
+      background-color: rgba(0, 0, 0, 0);
+    }
+  }
+}
+
+
+.api-details-expanded {
+  @include transition(max-height 1.2s ease-in);
+  max-height : 1000px;
+}
+
+#recipeIdBtn {
+  margin-top: 25px;
+}
+
+#getDistinctBtn {
+  margin-top: 25px;
+}
+
+#findRecipesBtn {
+  margin-top: 25px;
+}

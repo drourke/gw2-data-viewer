@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 node_modules
 public/images
 public/js/old
@@ -6,6 +7,21 @@ public/libs/
 public/styles/.sass-cache
 public/styles/sass/.sass-cache
 public/styles/sass/bourbon
+=======
+.DS_Store
+.nodemonignore
+.sass-cache/
+node_modules/
+public/images/
+public/libs/
+public/styles/sass/bootstrap
+public/styles/javascripts
+public/styles/fonts
+public/styles/.sass-cache
+config/env/
+test/coverage/
+
+>>>>>>> mongodb-implementation
 #################
 ## Eclipse
 #################
@@ -221,5 +237,12 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+<<<<<<< HEAD
 *.scssc
 public/libs/bootstrap-sass/.bower.json
+=======
+strongloop.json
+public/js/ExampleReact.js
+public/js/require.js
+
+>>>>>>> mongodb-implementation
